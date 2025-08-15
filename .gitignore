@@ -1,13 +1,14 @@
-# Terraform
 .terraform/
-terraform.tfstate
-terraform.tfstate.*
+*.tfstate
+*.tfstate.*
 crash.log
-crash.*.log
-*.tfvars
-*.tfvars.json
+*.pem
+*.key
+terraform.tfvars
+terraform.tfvars.json
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-EOF
+.terraform.lock.hcl
+
