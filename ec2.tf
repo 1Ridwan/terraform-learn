@@ -7,10 +7,6 @@ resource "aws_instance" "test" {
   user_data_replace_on_change = false
 }
 
-output "instance_id" { 
-    description = "The id of the EC2 instance"
-    value = aws_instance.test.id
-}
 
 resource "aws_instance" "web" {
   ami                     = local.instance_ami
