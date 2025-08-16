@@ -1,9 +1,15 @@
 resource "aws_instance" "test" {
-  ami                     = "ami-0cb226682278979e9"
+  ami                     = local.instance_ami
   instance_type           = var.instance_type
 }
+
+output "instance_id" { 
+    description = "The id of the instance"
+    value = aws_instance.test.id
+}
+
 resource "aws_instance" "web" {
-  ami                     = "ami-0cb226682278979e9"
+  ami                     = local.instance_ami
   instance_type           = var.instance_type
 
   tags = {
