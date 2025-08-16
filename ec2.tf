@@ -1,10 +1,14 @@
 resource "aws_instance" "test" {
   ami                     = local.instance_ami
   instance_type           = var.instance_type
+  tags = {
+      Name = "terraform-demo"
+      }
+  user_data_replace_on_change = false
 }
 
 output "instance_id" { 
-    description = "The id of the instance"
+    description = "The id of the EC2 instance"
     value = aws_instance.test.id
 }
 
