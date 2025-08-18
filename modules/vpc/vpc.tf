@@ -67,10 +67,62 @@ resource "aws_lb" "main" {
   name               = "main-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.lb_sg.id]
+  security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [for subnet in aws_subnet.public : subnet.id]
 
   tags = {
     Name = "main"
   }
+}
+
+# create security group for ALB - allow all incoming HTTP traffic, allow all outgoing traffic
+
+resource "aws_security_group" "alb_sg" {
+  name        = "allow_http"
+  description = "Allow HTTP inbound traffic and all outbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "alb-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "alb_http_in" {
+  security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "alb_all_out" {
+  security_group_id = aws_security_group.alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+# create security group for instances - allow incoming HTTP traffic from ALB, allow all outgoing traffic
+
+resource "aws_security_group" "instance_sg" {
+  name        = "instance-sg"
+  description = "Allow HTTP inbound traffic from alb-sg and all outbound traffic"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "instance-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "instance_http_from_alb" {
+  security_group_id            = aws_security_group.instance_sg.id
+  referenced_security_group_id = aws_security_group.alb_sg.id
+  from_port                    = 80
+  ip_protocol                  = "tcp"
+  to_port                      = 80
+}
+
+resource "aws_vpc_security_group_egress_rule" "instance_all_out" {
+  security_group_id = aws_security_group.instance_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
 }
